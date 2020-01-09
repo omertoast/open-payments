@@ -1,0 +1,234 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Protocol · Open Payments</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="## Assumptions"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Protocol · Open Payments"/><meta property="og:type" content="website"/><meta property="og:url" content="https://openpayments.dev/"/><meta property="og:description" content="## Assumptions"/><meta property="og:image" content="https://openpayments.dev/img/undraw_online.svg"/><meta name="twitter:card" content="summary"/><meta name="twitter:image" content="https://openpayments.dev/img/undraw_tweetstorm.svg"/><link rel="shortcut icon" href="/img/favicon.ico"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/js/scrollSpy.js"></script><link rel="stylesheet" href="/css/main.css"/><script src="/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/favicon.ico" alt="Open Payments"/><h2 class="headerTitleWithLogo">Open Payments</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/docs/overview" target="_self">Specification</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Specification</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Overview</h3><ul class=""><li class="navListItem"><a class="navItem" href="/docs/overview">Open Payments</a></li><li class="navListItem"><a class="navItem" href="/docs/oauth">OAuth 2.0 and Open ID Connect</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Specification</h3><ul class=""><li class="navListItem"><a class="navItem" href="/docs/resources">Resources</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/docs/protocol">Protocol</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Use Cases</h3><ul class=""><li class="navListItem"><a class="navItem" href="/docs/web-monetization">Web Monetization</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 id="__docusaurus" class="postHeaderTitle">Protocol</h1></header><article><div><span><h2><a class="anchor" aria-hidden="true" id="assumptions"></a><a href="#assumptions" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Assumptions</h2>
+<p>The protocols defined here are all used for direct interaction between the
+sender and receiver over the Internet using standard Web technologies (HTTP over
+TLS) so we also assume both parties are connected to the Internet and capable of
+performing secure HTTP requests.</p>
+<p>Where a party is not permanently online they will delegate some authority over
+their account to an agent such as a wallet provider.</p>
+<p>For many use cases it is necessary for a wallet to send to another wallet and be
+capable of interacting with that wallet as a &quot;Client&quot; as defined in the OAuth 2
+protocol.</p>
+<p>Participants MAY support dynamic client registration however this will be at
+their discretion on the basis of their regulatory obligations.</p>
+<p>Participants may also choose to not allow the anonymous creation of agreements.
+For example, a user may choose to disallow unsolicited payments into its
+account. In this case, a client may require authorization to create an invoice
+or session.</p>
+<p>Or, in another case different data may be returned when getting the state of an
+invoice or session. For example, an authorized party may be able to create
+invoices and another party will be able to get the STREAM connection credentials
+required to send money to that invoice but only the authorized party can get the
+status (amount paid etc) of the invoice.</p>
+<h1><a class="anchor" aria-hidden="true" id="how-it-works"></a><a href="#how-it-works" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>How it works</h1>
+<p>Open Payments uses standard web technologies, combined with Interledger, to
+allow a <strong>client</strong> (initiating the transaction) to push money to, or pull money
+from, a <strong>counter-party</strong> (accepting the transaction).</p>
+<p>The key technologies in use are:</p>
+<ul>
+<li><a href="https://paymentpointers.org">Payment Pointers</a></li>
+<li><a href="https://interledger.org/rfcs/0027-interledger-protocol-4/">Interledger v4 - ILP</a></li>
+<li><a href="https://interledger.org/rfcs/0029-stream/">STREAM</a></li>
+<li><a href="https://openid.net/connect/">OAuth 2.0 and Open ID Connect</a></li>
+</ul>
+<p>At a very high level, the client makes payments by:</p>
+<ol>
+<li>using the counter-party's Payment Pointer to resolve endpoints for the
+counter-party's Interledger-enabled financial account.</li>
+<li>creating an appropriate agreement using an agreements endpoint.</li>
+<li>if necessary, using OAuth 2 to get an access token that authorizes the client
+to execute payments covered by the agreement.</li>
+<li>sending/receiving ILP packets to/from the counter-party's account to complete
+payments allowed by the agreement.</li>
+</ol>
+<h2><a class="anchor" aria-hidden="true" id="payment-pointers"></a><a href="#payment-pointers" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Payment Pointers</h2>
+<p>With Open Payments, payments are sent to invoices or received from mandates,
+which are created against accounts, which are identified by
+<a href="https://paymentpointers.org">Payment Pointers</a>.</p>
+<p>In theory an agreement can be treated like a sub-account (if supported by the
+wallet) and new agreements can be created that are associated with the parent
+agreement rather than the account.</p>
+<p>Sessions ARE ephemeral sub-accounts.</p>
+<p>More experimentation is required to determine if this is a feature worth
+supporting for wallets.</p>
+<h3><a class="anchor" aria-hidden="true" id="terminology"></a><a href="#terminology" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Terminology</h3>
+<p>All Payment Pointers have a <code>subject</code>, the entity that owns or controls the
+resource that is accessed via the URL resolved from the pointer. This concept is
+borrowed from standard identity ontologies and in the Open Payments ecosystem it
+is assumed that the <code>subject</code> of a Payment Pointer is also the entity that owns
+any funds pushed to that pointer or pulled from it.</p>
+<p>Payment Pointers also have an <code>issuer</code> who controls the domain/origin at which
+the pointer is hosted on the Internet.</p>
+<p>A common scenario will be a person/company that is sending/receiving money (the
+<code>subject</code>) and a service that hosts the Interledger-enabled account/wallet
+holding the person/company's funds (the <code>issuer</code>).</p>
+<h2><a class="anchor" aria-hidden="true" id="discovery"></a><a href="#discovery" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Discovery</h2>
+<p>When an entity wishes to push/pull money to/from a Payment Pointer they will
+resolve the Payment Pointer URL and fetch the metadata for the server described
+by that URL as defined in <a href="https://tools.ietf.org/html/rfc8414">RFC8414</a>.</p>
+<h3><a class="anchor" aria-hidden="true" id="issuer-and-subject"></a><a href="#issuer-and-subject" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Issuer and Subject</h3>
+<p>Given a URL that has been resolved from a Payment Pointer a client can derive
+both the issuer identifier and subject identifier.</p>
+<p>Payment Pointers resolve to HTTPS URLs which are the unique subject identifiers
+for the subject of the Payment Pointer.</p>
+<p>The issuer identifier is the same URL with the <code>path</code>, <code>query string</code> and
+<code>fragment</code> trimmed away.</p>
+<p>E.g. Given the Payment Pointer <code>$wallet.example/alice</code> the subject identifier is
+<code>https://wallet.example/alice</code> and the issuer identifier is
+<code>https://wallet.example</code>.</p>
+<p>Once the client has determined the issuer identifier it can retrieve the server
+metadata for the issuer.</p>
+<h3><a class="anchor" aria-hidden="true" id="meta-data"></a><a href="#meta-data" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Meta-Data</h3>
+<p>The metadata is a JSON document resource that describes the various service
+endpoints that are available to:</p>
+<ul>
+<li>connect to the <code>subject</code>'s account via Interledger</li>
+<li>get authorization to perform actions on the <code>subject</code>'s account (using OAuth
+2.0)</li>
+<li>get more information about the <code>subject</code> (using OpenID Connect)</li>
+<li>create agreements with the <code>subject</code></li>
+</ul>
+<p>The document is hosted at a <code>.well-known</code> URL relative to the issuer identifier.</p>
+<p><a href="https://tools.ietf.org/html/rfc8414">RFC8414</a> defines the default well-known
+URI string to be <code>/.well-known/oauth-authorization-server</code>.</p>
+<p>It also states the following:</p>
+<blockquote>
+<p>Different applications utilizing OAuth authorization servers in
+application-specific ways may define and register different well- known URI
+suffixes used to publish authorization server metadata as used by those
+applications.</p>
+</blockquote>
+<p>Open Payments defines the well-known URL <code>/.well-known/open-payments</code> but, as
+specified in <a href="https://tools.ietf.org/html/rfc8414">RFC8414</a>, allows for the same
+document to be served at multiple URLs such as
+<code>/.well-known/oauth-authorization-server</code> or <code>./well-known/openid-configuration</code>
+which are already in wide use.</p>
+<p>The meta-data document MUST be queried using an HTTP &quot;GET&quot; request at the
+previously specified path.</p>
+<p>The client would make the following request when the issuer identifier is
+<code>https://wallet.example</code> and the well-known URI suffix is <code>open-payments</code> to
+obtain the metadata, since the issuer identifier contains no path component:</p>
+<pre><code class="hljs css language-http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/.well-known/open-payments</span> HTTP/1.1
+<span class="hljs-attribute">Host</span>: wallet.example
+</code></pre>
+<p>From <a href="https://tools.ietf.org/html/rfc8414">RFC8414</a>:</p>
+<blockquote>
+<p>The document is a set of claims about the <code>subject</code>'s configuration, including
+all necessary endpoints and public key location information. A successful
+response MUST use the 200 OK HTTP status code and return a JSON object using
+the <code>application/json</code> content type that contains a set of claims as its
+members that are a subset of the metadata values defined in
+<a href="https://tools.ietf.org/html/rfc8414#section-2">RFC8414 Section 2</a></p>
+</blockquote>
+<p>Open Payments defines the following additional claims:</p>
+<ul>
+<li><p><code>payment_invoices_endpoint</code>  <br>
+URL of the server's invoices endpoint where the client is able to create new
+invoices with the <code>subject</code>.</p></li>
+<li><p><code>payment_mandates_endpoint</code>  <br>
+URL of the server's mandates endpoint where the client is able to create new
+mandates with the <code>subject</code>.</p></li>
+<li><p><code>payment_sessions_endpoint</code>  <br>
+URL of the server's sessions endpoint where the client is able to create new
+sessions with the <code>subject</code>.</p></li>
+<li><p><code>payment_assets_supported</code>  <br>
+A list of asset definitions for assets that can be used to create agreements
+on this server. The schema of an asset definition is defined in
+<a href="#assets">Assets</a>.</p></li>
+</ul>
+<p>Other claims MAY also be returned.</p>
+<p>Claims that return multiple values are represented as JSON arrays. Claims with
+zero elements MUST be omitted from the response.</p>
+<p>An error response uses the applicable HTTP status code value.</p>
+<p>The following is a non-normative example response:</p>
+<pre><code class="hljs css language-http">HTTP/1.1 <span class="hljs-number">200</span> OK
+<span class="hljs-attribute">Content-Type</span>: application/json
+
+<span class="json">{
+  <span class="hljs-attr">"issuer"</span>: <span class="hljs-string">"https://wallet.example"</span>,
+  <span class="hljs-attr">"authorization_endpoint"</span>: <span class="hljs-string">"https://wallet.example/authorize"</span>,
+  <span class="hljs-attr">"token_endpoint"</span>: <span class="hljs-string">"https://wallet.example/token"</span>,
+  <span class="hljs-attr">"token_endpoint_auth_methods_supported"</span>: [<span class="hljs-string">"client_secret_basic"</span>,<span class="hljs-string">"private_key_jwt"</span>],
+  <span class="hljs-attr">"token_endpoint_auth_signing_alg_values_supported"</span>: [<span class="hljs-string">"RS256"</span>, <span class="hljs-string">"ES256"</span>],
+  <span class="hljs-attr">"userinfo_endpoint"</span>: <span class="hljs-string">"https://wallet.example/userinfo"</span>,
+  <span class="hljs-attr">"jwks_uri"</span>: <span class="hljs-string">"https://wallet.example/jwks.json"</span>,
+  <span class="hljs-attr">"registration_endpoint"</span>: <span class="hljs-string">"https://wallet.example/register"</span>,
+  <span class="hljs-attr">"scopes_supported"</span>: [<span class="hljs-string">"openid"</span>,<span class="hljs-string">"profile"</span>,<span class="hljs-string">"email"</span>,<span class="hljs-string">"address"</span>,<span class="hljs-string">"phone"</span>,<span class="hljs-string">"offline_access"</span>],
+  <span class="hljs-attr">"response_types_supported"</span>: [<span class="hljs-string">"code"</span>, <span class="hljs-string">"code token"</span>],
+  <span class="hljs-attr">"service_documentation"</span>: <span class="hljs-string">"http://wallet.example/service_documentation.html"</span>,
+  <span class="hljs-attr">"ui_locales_supported"</span>: [<span class="hljs-string">"en-US"</span>, <span class="hljs-string">"en-GB"</span>, <span class="hljs-string">"en-CA"</span>, <span class="hljs-string">"fr-FR"</span>, <span class="hljs-string">"fr-CA"</span>],
+  <span class="hljs-attr">"payment_invoices_endpoint"</span>: <span class="hljs-string">"https://wallet.example/invoices"</span>,
+  <span class="hljs-attr">"payment_mandates_endpoint"</span>: <span class="hljs-string">"https://wallet.example/mandates"</span>,
+  <span class="hljs-attr">"payment_sessions_endpoint"</span>: <span class="hljs-string">"https://wallet.example/sessions"</span>,
+  <span class="hljs-attr">"payment_assets_supported"</span>: [
+    {<span class="hljs-attr">"code"</span>: <span class="hljs-string">"USD"</span>, <span class="hljs-attr">"scale"</span>: <span class="hljs-number">6</span>},
+    {<span class="hljs-attr">"code"</span>: <span class="hljs-string">"EUR"</span>, <span class="hljs-attr">"scale"</span>: <span class="hljs-number">8</span>}
+  ]
+}
+</span></code></pre>
+<h2><a class="anchor" aria-hidden="true" id="creating-agreements"></a><a href="#creating-agreements" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Creating Agreements</h2>
+<p>The client then creates an agreement by making a POST to either the appropriate
+endpoint. The <code>subject</code> of the agreement is the Payment Pointer.</p>
+<p>Upon creation of the agreement the server responds with a <code>201 Created</code> response
+and a <code>Location</code> header containing the URL of the newly created agreement.</p>
+<p>The URL is also returned in the <code>name</code> field of the response.</p>
+<p>This URL (resource name) is the unique identifier for the agreement and is used
+by the client in any subsequent authorization requests.</p>
+<p>The type of agreement and the data that must be provided will depend on the use
+cases as described below.</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/resources"><span class="arrow-prev">← </span><span>Resources</span></a><a class="docs-next button" href="/docs/web-monetization"><span>Web Monetization</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#assumptions">Assumptions</a></li><li><a href="#payment-pointers">Payment Pointers</a><ul class="toc-headings"><li><a href="#terminology">Terminology</a></li></ul></li><li><a href="#discovery">Discovery</a><ul class="toc-headings"><li><a href="#issuer-and-subject">Issuer and Subject</a></li><li><a href="#meta-data">Meta-Data</a></li></ul></li><li><a href="#creating-agreements">Creating Agreements</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/favicon.ico" alt="Open Payments" width="66" height="58"/></a><div><h5>Protocol</h5><a href="/docs/en/overview">Overview</a><a href="/en/rafiki">Demo</a></div><div><h5>Code</h5><a href="https://github.com/adrianhopebailie/open-payments">GitHub</a><a class="github-button" data-icon="octicon-star" data-count-href="/adrianhopebailie/open-payments/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><section class="copyright">Copyright © 2020 Coil Technologies</section></footer></div></body></html>
