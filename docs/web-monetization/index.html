@@ -65,25 +65,25 @@ attempts to formalise/simplify the concept of grouping payments received through
 <h2><a class="anchor" aria-hidden="true" id="overview"></a><a href="#overview" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Overview</h2>
 <p>The term Monetization is used to encompass use-cases where payments are made piecemeal. These use-cases don't have
 defined amounts to be paid and therefore need a mechanism to account for them. The mechanism
-proposed is in the form of a Monetization Endpoint. This is an endpoint that when queried for STREAM
-credentials will provide the details for a currently &quot;open&quot; Invoice. Where &quot;open&quot; means an Invoice that is still
-able to receive incoming Payments. At any time the Invoice can be &quot;closed&quot;, at which point it will stop
-accepting incoming payments. Once the Invoice is closed, the Wallet can sum the payments recieved for that Invoice of
-Invoice and allocate the funds to the Users balance on its own internal ledger system. Any new requests for STREAM
-credentials will require a new &quot;open&quot; Invoice to be generated. The mechanism for closing out Invoices can be determined
-by the Wallet but will generally be time based. Wallets supporting Monetization will provider their Users with a
-Monetization Endpoint/s. Further it will ensure there is always an &quot;open&quot; Invoice when credentials are requested from
-a Client. This can be created lazily.</p>
-<p>The term Monetization Endpoint was chosen as this proposal allows for use cases that include but are not limited
-to Web Monetization, such as Codius Hosts and yet to be defined future use-cases.</p>
+proposed is that a Payment Pointer converted into its URL format is a Monetization Endpoint. The term Monetization
+Endpoint was chosen as this proposal allows for use cases that include but are not limited to Web Monetization, such
+as Codius Hosts and yet to be defined future use-cases. For example, given the Payment Pointer <code>$issuer.wallet/alice</code>, the Monetization Endpoint would be <code>https://issuer.wallet/alice</code> .</p>
+<p>A Monetization Endpoint is an endpoint that when queried for STREAM credentials will provide the details for a
+currently &quot;open&quot; Invoice. Where &quot;open&quot; means an Invoice that is still able to receive incoming Payments. At any time
+the Invoice can be &quot;closed&quot;, at which point it will stop accepting incoming payments. Once the Invoice is closed, the
+Wallet can sum the payments received for that Invoice and allocate the funds to the Users balance on its
+own internal ledger system. Any new requests for STREAM credentials will require a new &quot;open&quot; Invoice to be generated
+. The mechanism for closing out Invoices can be determined by the Wallet but will generally be time based. Wallets
+supporting Monetization will provide their Users with a Payment Pointer that is Monetization Enabled. Further it will
+ensure there is always an &quot;open&quot; Invoice when credentials are requested from a Client. This can be created lazily.</p>
 <h2><a class="anchor" aria-hidden="true" id="client-interaction"></a><a href="#client-interaction" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Client Interaction</h2>
-<p>Given a Monetization Endpoint, an entity wishing to get STREAM credentials can make an HTTP <code>GET</code>/<code>OPTIONS</code> request
-against the endpoint. A non-normative example is</p>
-<pre><code class="hljs css language-http request"><span class="hljs-keyword">GET</span> <span class="hljs-string">/monetization/4c885b94-7bf0-4222-8224-6d27c6ac9198</span> HTTP/1.1
+<p>Given a Payment Pointer that supports Monetization, <code>$issuer.wallet/alice</code>, an entity wishing to get STREAM credentials
+can make an HTTP <code>GET</code> request against the Payment Pointer into is URL form. A non-normative example is</p>
+<pre><code class="hljs css language-http request"><span class="hljs-keyword">GET</span> <span class="hljs-string">/alice</span> HTTP/1.1
 <span class="hljs-attribute">Host</span>: issuer.wallet
 </code></pre>
 <p>with the response returning the STREAM credentials for the current &quot;open&quot; Invoice for monetization. An example
-response would be. (This could potentially be a 302 to the Invoices OPTIONS endpoint)</p>
+response would be.</p>
 <pre><code class="hljs css language-http request">HTTP/1.1 <span class="hljs-number">200</span> OK
 <span class="hljs-attribute">Content-Type</span>: application/json
 
@@ -103,8 +103,8 @@ as header values in the request. The following are values that must be supported
 <h2><a class="anchor" aria-hidden="true" id="wallets-implementation"></a><a href="#wallets-implementation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Wallets Implementation</h2>
 <p>Whilst the above shows how a client would interact with the system, Wallets still need to know how to handle it
 within their own codebase.</p>
-<p>Given a request to the monetization URL</p>
-<pre><code class="hljs css language-http request"><span class="hljs-keyword">GET</span> <span class="hljs-string">/monetization/4c885b94-7bf0-4222-8224-6d27c6ac9198</span> HTTP/1.1
+<p>Given a request to the Payment Pointer, <code>$issuer.wallet/alice</code></p>
+<pre><code class="hljs css language-http request"><span class="hljs-keyword">GET</span> <span class="hljs-string">/alice</span> HTTP/1.1
 <span class="hljs-attribute">Host</span>: issuer.wallet
 </code></pre>
 <p>The wallet will first determine if their is an &quot;open&quot; Invoice for this Monetization Endpoint. If there is one, it
@@ -192,17 +192,11 @@ support SPSP queries.</p>
 the associated Monetization Endpoint for a User.</p>
 <p>In order for Wallets to support this, it may be easier for wallets in the background to map the default payment
 pointer given to the user to a Monetization Endpoint they generate.</p>
-<!--
-## Proxying Monetization Requests
-<p>For certain use-cases, the User may want the ability for a third-party to verify payments etc. An example is Cinnamon
-where a user would provide Cinnamon with a Monetization Endpoint.
---&gt;</p>
 <h2><a class="anchor" aria-hidden="true" id="notes"></a><a href="#notes" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Notes</h2>
-<p>Talk about the relation between Open Payments and Web Monetization</p>
+<p>Changes:</p>
 <ul>
-<li>Link rel is a place where doing a GET gets the current Invoice Open for session</li>
-<li>Resolving a Payment Pointer to the actual WM_URL that will be provided in the REL</li>
-<li>Work out how this works with Codius/Paid API requests</li>
+<li>For Monetization it is proposed changing the destination_account to ilpAddress to be remove confusion on the
+account aspect.</li>
 </ul>
 <p>Ideas:</p>
 <ul>
@@ -214,7 +208,6 @@ Receipts that are not just Web Monetization</li>
 <li>Given a payment pointer, can I resolve a users monetization URL? Should this even be possible?</li>
 <li>How to resolve expiry of credentials/when an Invoice has been deemed closed? STREAM layer fails and then you would
 propagate it to the Application layer potentially.</li>
-<li>Should there be a deprecation plan for SPSP &amp; Payment Pointers being used in the canonical form ($payment.poinert
-.com) for use cases other than for discovery.</li>
+<li>Should there be a deprecation plan for SPSP?</li>
 </ul>
-</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/identity"><span class="arrow-prev">← </span><span>Identity</span></a><a class="docs-next button" href="/docs/checkout_push"><span>Checkout (Push)</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#motivation">Motivation</a></li><li><a href="#overview">Overview</a></li><li><a href="#client-interaction">Client Interaction</a></li><li><a href="#wallets-implementation">Wallets Implementation</a></li><li><a href="#backwards-compatibility-with-spsp-and-web-monetization">Backwards compatibility with SPSP and Web Monetization</a></li><li><a href="#proxying-monetization-requests">Proxying Monetization Requests</a></li><li><a href="#notes">Notes</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/favicon.ico" alt="Open Payments" width="66" height="58"/></a><div><h5>Protocol</h5><a href="/docs/en/overview">Overview</a><a href="/en/rafiki">Demo</a></div><div><h5>Code</h5><a href="https://github.com/adrianhopebailie/open-payments">GitHub</a><a class="github-button" data-icon="octicon-star" data-count-href="/adrianhopebailie/open-payments/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><section class="copyright">Copyright © 2020 Coil Technologies</section></footer></div></body></html>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/identity"><span class="arrow-prev">← </span><span>Identity</span></a><a class="docs-next button" href="/docs/checkout_push"><span>Checkout (Push)</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#motivation">Motivation</a></li><li><a href="#overview">Overview</a></li><li><a href="#client-interaction">Client Interaction</a></li><li><a href="#wallets-implementation">Wallets Implementation</a></li><li><a href="#backwards-compatibility-with-spsp-and-web-monetization">Backwards compatibility with SPSP and Web Monetization</a></li><li><a href="#notes">Notes</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/favicon.ico" alt="Open Payments" width="66" height="58"/></a><div><h5>Protocol</h5><a href="/docs/en/overview">Overview</a><a href="/en/rafiki">Demo</a></div><div><h5>Code</h5><a href="https://github.com/adrianhopebailie/open-payments">GitHub</a><a class="github-button" data-icon="octicon-star" data-count-href="/adrianhopebailie/open-payments/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><section class="copyright">Copyright © 2020 Coil Technologies</section></footer></div></body></html>
